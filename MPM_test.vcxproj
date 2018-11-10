@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{4416E3EB-A38D-41F1-9201-7A9E36436327}</ProjectGuid>
+    <RootNamespace>MPMtest</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files\HDF_Group\HDF5\1.10.3\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Program Files\HDF_Group\HDF5\1.10.3\lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Program Files\HDF_Group\HDF5\1.10.3\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions); _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Program Files\HDF_Group\HDF5\1.10.3\lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Base.cpp" />
+    <ClCompile Include="BoundaryCondition.cpp" />
+    <ClCompile Include="CMManager.cpp" />
+    <ClCompile Include="LinearElasticity.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
+    <ClCompile Include="Mesh_1D2.cpp" />
+    <ClCompile Include="Mesh_R2D4.cpp" />
+    <ClCompile Include="ObjectByMesh_T2D3.cpp" />
+    <ClCompile Include="ObjectOutput_1D_Mechanics.cpp" />
+    <ClCompile Include="ObjectOutput_2D_Mechanics.cpp" />
+    <ClCompile Include="ObjectOutput_1D_Hydromechanics.cpp" />
+    <ClCompile Include="OutputRequest.cpp" />
+    <ClCompile Include="Particle_1D_Hydromechanics.cpp" />
+    <ClCompile Include="Particle_1D_Mechanics.cpp" />
+    <ClCompile Include="Particle_2D_Mechanics.cpp" />
+    <ClCompile Include="Solver_1D_Hydromechanics_1D2_Explicit_FixedMem.cpp" />
+    <ClCompile Include="Solver_1D_Mechanics_1D2_Explicit_FixedMem.cpp" />
+    <ClCompile Include="Solver_1D_Mechanics_test_models.cpp" />
+    <ClCompile Include="Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem.cpp" />
+    <ClCompile Include="Solver_2DPlaneStrain_Mechanics_test_models.cpp" />
+    <ClCompile Include="test_funcs.cpp" />
+    <ClCompile Include="TmpDataFile.cpp" />
+    <ClCompile Include="TmpDataToHdf5.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileBuffer.h" />
+    <ClInclude Include="ObjectOutput_1D_Hydromechanics.h" />
+    <ClInclude Include="Solver_1D_Hydromechanics_1D2_Explicit_FixedMem.h" />
+    <ClInclude Include="TimeCurve.h" />
+    <ClInclude Include="Element_R2D4.h" />
+    <ClInclude Include="Mesh_R2D4.h" />
+    <ClInclude Include="Node_R2D.h" />
+    <ClInclude Include="ObjectByMesh_T2D3.h" />
+    <ClInclude Include="ObjectOutput_2D_Mechanics.h" />
+    <ClInclude Include="Particle_1D_Hydromechanics.h" />
+    <ClInclude Include="Particle_2D_Mechanics.h" />
+    <ClInclude Include="Solver.h" />
+    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="MemoryPoolTemplate.hpp" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ObjectOutput.h" />
+    <ClInclude Include="ObjectOutput_1D_Mechanics.h" />
+    <ClInclude Include="OutputRequest.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="Particle_1D_Mechanics.h" />
+    <ClInclude Include="Solver_1D_Mechanics_1D2_Explicit_FixedMem.h" />
+    <ClInclude Include="Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem.h" />
+    <ClInclude Include="TmpDataFile.h" />
+    <ClInclude Include="CMManager.h" />
+    <ClInclude Include="ConstitutiveModel.h" />
+    <ClInclude Include="Element_1D2.h" />
+    <ClInclude Include="GaussIntegrationMacro.h" />
+    <ClInclude Include="ItemStackTemplate.hpp" />
+    <ClInclude Include="LinearElasticityModel.h" />
+    <ClInclude Include="Mesh_1D2.h" />
+    <ClInclude Include="Node_1D.h" />
+    <ClInclude Include="TmpDataToHdf5.h" />
+    <ClInclude Include="utilities.hpp" />
+    <ClInclude Include="BoundaryCondition.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,7 @@
+# Folder
+Debug
+x64
+
+# Files
+*.tmpdata
+*.h5
