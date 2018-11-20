@@ -77,13 +77,11 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_1(void)
 	objects[0].finish_init();
 
 	// Output request
-	OutputRequest output_request;
+	OutputRequest output_request("test_result");
 	Output *out1;
 	std::vector<size_t> pcl_id;
 	std::vector<unsigned long long> field_id;
 
-	output_request.setFileName("test_result");
-	output_request.setStepTime(time_step);
 	for (size_t i = 0; i < 4; i++) pcl_id.push_back(i + 1);
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::x));
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::y));
@@ -98,7 +96,6 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_1(void)
 	out1 = output_request.addOutput("test_output1", 10);
 	out1->addObject(&objects[0], &field_id, &pcl_id);
 
-	output_request.finish_init();
 	output_request.outputMeshGeometry(&mesh);
 
 	Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem *solver;
@@ -202,13 +199,11 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_2(void)
 	objects[0].finish_init();
 
 	// Output request
-	OutputRequest output_request;
+	OutputRequest output_request("test_result");
 	Output *out1;
 	std::vector<size_t> pcl_id;
 	std::vector<unsigned long long> field_id;
 
-	output_request.setFileName("test_result");
-	output_request.setStepTime(time_step);
 	for (size_t i = 0; i < 16; i++) pcl_id.push_back(i + 1);
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::x));
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::y));
@@ -223,7 +218,6 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_2(void)
 	out1 = output_request.addOutput("Output1", 20);
 	out1->addObject(&objects[0], &field_id, &pcl_id);
 
-	output_request.finish_init();
 	output_request.outputMeshGeometry(&mesh);
 
 	Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem *solver;
@@ -320,12 +314,12 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_3(void)
 	objects[0].finish_init();
 
 	// Output request
-	OutputRequest output_request;
+	OutputRequest output_request("test_result");
 	Output *out;
 	std::vector<size_t> pcl_id;
 	std::vector<unsigned long long> field_id;
-	output_request.setFileName("test_result");
-	output_request.setStepTime(time_step);
+
+
 	for (size_t i = 0; i < 24; i++)	pcl_id.push_back(i + 1);
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::x));
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::y));
@@ -341,7 +335,6 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_3(void)
 	out = output_request.addOutput("Output1", 20);
 	out->addObject(&objects[0], &field_id, &pcl_id);
 
-	output_request.finish_init();
 	output_request.outputMeshGeometry(&mesh);
 
 	Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem *solver;
@@ -437,12 +430,11 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_4(void)
 	objects[0].finish_init();
 
 	// Output request
-	OutputRequest output_request;
+	OutputRequest output_request("test_result");
 	Output *out;
 	std::vector<size_t> pcl_id;
 	std::vector<unsigned long long> field_id;
-	output_request.setFileName("test_result");
-	output_request.setStepTime(time_step);
+
 	for (size_t i = 0; i < 4*16; i++)	pcl_id.push_back(i + 1);
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::x));
 	field_id.push_back((unsigned long long)(OutputFieldType_2D_Mechanics::y));
@@ -458,13 +450,12 @@ void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_4(void)
 	out = output_request.addOutput("Output1", 100);
 	out->addObject(&objects[0], &field_id, &pcl_id);
 
-	output_request.finish_init();
 	output_request.outputMeshGeometry(&mesh);
 
 	Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem *solver;
 	solver = new Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem(
 		time_step, mesh, objects, output_request);
-	solver->solve(0.001);
+	solver->solve(0.01);
 	delete solver;
 
 	TmpDataToHdf5 trans;

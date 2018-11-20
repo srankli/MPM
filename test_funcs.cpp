@@ -13,6 +13,8 @@
 
 #include "TmpDataToHdf5.h"
 
+#include "Solver_Test.h"
+
 void test_TimeCurve(void)
 {
 	size_t i;
@@ -397,14 +399,12 @@ void test_OutputRequest(void)
 	for (size_t i = 0; i < objects.size(); i++)
 		objects[i].finish_init();
 
-	OutputRequest output_request;
+	OutputRequest output_request("test_output");
+
 	Output *out1;
 	Output *out2;
 	std::vector<size_t> pcl_id;
 	std::vector<unsigned long long> field_id;
-
-	output_request.setFileName("test_output");
-	output_request.setStepTime(time_step);
 
 	pcl_id.push_back(1);
 	pcl_id.push_back(2);
@@ -420,21 +420,20 @@ void test_OutputRequest(void)
 	//field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::stress11));
 	//field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::strain11));
 	
-	out1 = output_request.addOutput("test_output1", 10);
+	out1 = output_request.addOutput("test_output1", 2);
 	out1->addObject(&objects[0], &field_id, &pcl_id);
 	//out1->addObject(&objects[0], &field_id);
 	
-	out2 = output_request.addOutput("test_output2", 15);
-	out2->addObject(&objects[0], &field_id);
+	//out2 = output_request.addOutput("test_output2", 2);
+	//out2->addObject(&objects[0], &field_id);
 
-	output_request.finish_init();
 	output_request.outputMeshGeometry(&mesh);
 
-	output_request.output(1, 0.01);
-	output_request.output(2, 0.05, true);
-	output_request.output(3, 0.08);
-
-	output_request.complete();
+	Solver_Test step1(1.0, mesh, objects, output_request, "test_step1");
+	step1.solve(0.5);
+	
+	Solver_Test step2(2.0, step1);
+	step2.solve(1.0);
 
 	TmpDataToHdf5 trans;
 	trans.init(output_request);

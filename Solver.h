@@ -1,6 +1,7 @@
 #ifndef __DATAANDSOLVER_H__
 #define __DATAANDSOLVER_H__
 
+class Output;
 class OutputRequest;
 
 // --------------------------------- SolverError ---------------------------------
@@ -25,13 +26,25 @@ public:
 };
 
 // ----------------------------------- Solver -----------------------------------
+// Each solver calculate one step of analysis
 class Solver
 {
+	friend Output;
+	friend OutputRequest;
 protected:
-	// Size of time step
+	// The step from with this solver start (start from 1)
+	size_t index;
+	std::string name;
+
+	// Start time of this step
+	const double t_start;
+	// Time length of this step
 	const double t_step;
-	// Time already calcuated
+	// Time already calcuated (start from 0.0)
 	double t_cal;
+	// cureent time; (== t_start + t_cur)
+	double t_cur;
+
 	// Size of time increment
 	double t_increment;
 	/*
@@ -42,19 +55,20 @@ protected:
 	unsigned long long iteration_index;
 	
 	// output class
-	OutputRequest *output;
-
+	OutputRequest &output;
+	
 public:
-	Solver(const double time_step, OutputRequest *out) :
-		t_step(time_step), t_cal(0.0),
-		t_increment(0.0), t_increment_a(0.0),
-		iteration_index(0),	output(out) {}
+	Solver(double time_step, OutputRequest &out, const char *na = "");
+	Solver(double time_step, Solver &prev_solver, const char *na = "");
 	~Solver() {}
 
 	inline void setTimeIncrement(double time_increment) noexcept
 	{ t_increment = time_increment; } // use CFL in the future
 
-	// initialize calculation
+	/*
+	Initialize Calculation
+	Note that behavior of init() function need to change according to step_index
+	*/
 	virtual int init(void) { return 0; }
 	// complete one iteration
 	virtual int iteration(void) = 0;

@@ -135,7 +135,7 @@ public:
 	{
 		return id && id <= particleNum ? true : false;
 	}
-	int addMassForceBC(MassForceBCParam *mfp_param)
+	virtual int addMassForceBC(MassForceBCParam *mfp_param)
 	{
 		int res = -1;
 		if (validateParticleId(mfp_param->index))
@@ -145,7 +145,7 @@ public:
 		}
 		return res;
 	}
-	int addSurfaceForceBC(SurfaceForceBCParam *sfp_param)
+	virtual int addSurfaceForceBC(SurfaceForceBCParam *sfp_param)
 	{
 		int res = -1;
 		if (validateParticleId(sfp_param->index))

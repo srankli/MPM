@@ -15,12 +15,13 @@ struct ParticleParam_1D_Hydromechanics
 public:
 	// terms with *** MUST BE initialized
 	double x; // location ***
-	double n; // porosity ***
+	
+	// Momentum of solid - fluid mixture
+	double momentum1_m; // ***
 
 	// ----------- Solid phase ------------
 	double mass_s; // ***
 	double density_s; // ***
-	double momentum1_s; // ***
 
 	double estress11; // effective stress, take tension as positive, default = 0.0
 	double strain11; // total strain of soil skeleton, default = 0.0
@@ -30,23 +31,22 @@ public:
 	// --------- fluid phase ---------
 	double mass_f; // ***
 	double density_f; // ***
-	double momentum1_f; //***
 
 	double p; // pore pressure, take compressive as positive, default = 0.0
 	double Kf; // bulk modulus of fluid***
 
 	/*
 	Darcy's law:
-	nv = kappa / unit_weight_fluid * (-grad pressure + fluid_density * bodyforce)
+	nv = k * (-grad pressure + fluid_density * bodyforce)
+	note that k = kw / unit_weight of water
 	*/
-	double kappa; // permeability ***
+	double k; // permeability *** (unit: N*s/m4)
 
 public:
 	ParticleParam_1D_Hydromechanics() :
-		momentum1_s(0.0),
+		momentum1_m(0.0),
 		estress11(0.0), strain11(0.0),
 		estrain11(0.0), pstrain11(0.0),
-		momentum1_f(0.0),
 		p(0.0){}
 };
 
@@ -64,7 +64,6 @@ public:
 	// ----------- Solid phase ------------
 	double mass_s;
 	double density_s;
-	double momentum1_s; // linear momentum
 
 	double estress11; // effective stress, take tension as positive
 	double strain11; // total strain of soil skeleton
@@ -74,21 +73,26 @@ public:
 	// --------- fluid phase ---------
 	double mass_f;
 	double density_f;
-	double momentum1_f;
+	//double momentum1_f; // is not momentum strictly speaking
 
-	double p; // pore pressure, take compressive as positive
-	double Kf; // bulk modulus of fluid
+	// pore pressure, take compression as positive
+	double p;
+	// bulk modulus of fluid
+	double Kf;
 
-	double kappa; // permeability
+	double momentum1_m; // linear momentum of solid - fluid mixture 
+	// permeability: refer to class ParticleParam_1D_Hydromechanics for its defination.
+	double k;
 
 public:
 	Particle_1D_Hydromechanics() :
 		x(0.0), n(0.0), stress11(0.0),
-		mass_s(0.0), density_s(0.0), momentum1_s(0.0),
+		mass_s(0.0), density_s(0.0), momentum1_m(0.0),
 		estress11(0.0), strain11(0.0), estrain11(0.0), pstrain11(0.0),
-		mass_f(0.0), density_f(0.0), momentum1_f(0.0),
-		p(0.0), Kf(0.0), kappa(0.0) {}
+		mass_f(0.0), density_f(0.0), //momentum1_f(0.0),
+		p(0.0), Kf(0.0), k(0.0) {}
 };
+
 
 // variables for calculation
 struct ParticleVar_1D_Hydromechanics : public ParticleVar
@@ -99,17 +103,19 @@ public:
 	NodeVar_1D_Hydromechanics *nodeVar1, *nodeVar2;
 
 	double xi;// natural coordinate in element
+	
+	double volume; // volume represented by particle
+	double avgdensity_s; // (1 - n) * density_s
+	double avgdensity_f; // n * density_f
 
-	double unit_weight_fluid; // unit weight of fluid
-
-	double avgdensity_s;
-	double avgdensity_f;
-
+	double a1_s; // acceleration of soild phase
 	double v1_s; // velocity of solid phase
-	double v1_f; // velocity of fluid phase U = u + w/n
-
 	double dstrain11; // increment of total strain
-	double dU_dx; // "volumetric strain" of fluid
+	
+	// relative apparent velocity of fluid phase relative to solid phase
+	// w = n * (v1_f - v1_s)
+	double w;
+	double dw_dx; // "volumetric strain" of fluid
 
 	union // value of shape function
 	{
@@ -146,10 +152,11 @@ public:
 		particles(nullptr) {}
 	~ObjectByParticle_1D_Hydromechanics() {}
 	
-	int addParticle(Particle_1D_Hydromechanics *pcl_param,
+	int addParticle(ParticleParam_1D_Hydromechanics *pcl_param,
 					ConstitutiveModelParam *pcl_cm);
 	void finish_init(void);
 
+	// These functions can only be called after finish_init()
 	inline Particle_1D_Hydromechanics *getParticleById(size_t id) noexcept
 	{
 		return id <= particleNum && id ? particles + id - 1 : nullptr;

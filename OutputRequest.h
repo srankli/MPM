@@ -11,13 +11,14 @@
 // Remeber also to modify addOutput functions when adding new type of output
 #include "ObjectOutput.h"
 #include "ObjectOutput_1D_Mechanics.h"
-//#include "OutputData_1D_Hydromechanics.h"
+#include "ObjectOutput_1D_Hydromechanics.h"
 #include "ObjectOutput_2D_Mechanics.h"
 
 class OutputRequest;
 // used for mesh output
 class Mesh;
 class TmpDataToHdf5;
+class Solver;
 
 class FileDataKey
 {
@@ -31,6 +32,8 @@ public:
 	};
 	static KeyType OutputData;
 	static KeyType OutputAttribute;
+	static KeyType OutputStepIndex;
+	static KeyType OutputStepName;
 	static KeyType OutputIndex;
 	static KeyType OutputName;
 	static KeyType ObjectNumber;
@@ -118,8 +121,12 @@ public:
 		if (!res) ++object_num;
 		return res;
 	}
-	int init(TmpDataFile &outFile, double step_time);
-	double output(unsigned long long iter_index, double t_cur, bool mustOutput = false);
+	// init() output the data headers.
+	int init(TmpDataFile &outFile, Solver &solver);
+
+	// Force output data
+	void output_f(unsigned long long iter_index, double t_cur);
+	double output(unsigned long long iter_index, double t_cur);
 	void complete(void);
 };
 
@@ -128,30 +135,33 @@ class OutputRequest
 {
 	friend TmpDataToHdf5;
 protected:
-	double step_time;
 	std::string file_name;
+	TmpDataFile file;
 
 	double next_output_time; // used by output(t_cur)
-	TmpDataFile file;
 
 	Output *top;
 	Output *tail;
 	size_t output_num;
-public:
-	OutputRequest() : step_time(0.0), next_output_time(0.0),
-		top(nullptr), tail(nullptr), output_num(0) {}
-	~OutputRequest();
+	
+	Solver *solver;
 
-	inline void setFileName(const char *fname) noexcept { file_name = fname; }
+public:
+	OutputRequest(const char *fname);
+	~OutputRequest();
+	inline void setSolver(Solver *sol) noexcept { solver = sol; }
+
 	inline const std::string &getFileName(void) noexcept { return file_name; }
-	inline void setStepTime(const double st) noexcept {	step_time = st;	}
-	inline double getStepTime(void) noexcept { return step_time; }
 	inline size_t getOutputNum(void) noexcept { return output_num; }
+
 	Output *addOutput(const char *out_name,
 		size_t output_num, /* times of output in this step */
 		size_t buf_size = 10240 /* default 10k */);
-	int finish_init(void);
-	void output(unsigned long long iter_index, double t_cur, bool mustOutput = false);
+	int deleteOutput(const char *out_name);
+	
+	void output_data_header(void);
+	void output_f(void);
+	void output(void);
 	void complete(void);
 	void reset(void);
 

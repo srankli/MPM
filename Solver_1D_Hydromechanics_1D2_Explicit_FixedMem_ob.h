@@ -1,5 +1,5 @@
-#ifndef __SOLVER_1D_HYDROMECHANICS_1D2_EXPLICIT_FIXEDMEM_H__
-#define __SOLVER_1D_HYDROMECHANICS_1D2_EXPLICIT_FIXEDMEM_H__
+#ifndef __SOLVER_1D_HYDROMECHANICS_1D2_EXPLICIT_FIXEDMEM_ob_H__
+#define __SOLVER_1D_HYDROMECHANICS_1D2_EXPLICIT_FIXEDMEM_ob_H__
 
 #include <vector>
 
@@ -7,10 +7,6 @@
 #include "Mesh_1D2.h"
 #include "Particle_1D_Hydromechanics.h"
 #include "OutputRequest.h"
-
-/*
-This solver ignore relative acceleration of water relative to soil skeleton
-*/
 
 class Solver_1D_Hydromechanics_1D2_Explicit_FixedMem : public Solver
 {
@@ -36,14 +32,10 @@ protected:
 
 public:
 	Solver_1D_Hydromechanics_1D2_Explicit_FixedMem(
-		double time_step,
+		const double time_step,
 		Mesh_1D2 &mh,
 		std::vector<ObjectByParticle_1D_Hydromechanics> &pcl_objs,
 		OutputRequest &out);
-	// The copy function is used to get data from the previous step (solver)
-	Solver_1D_Hydromechanics_1D2_Explicit_FixedMem(
-		double time_step,
-		Solver_1D_Hydromechanics_1D2_Explicit_FixedMem &prev_solver);
 	~Solver_1D_Hydromechanics_1D2_Explicit_FixedMem();
 
 	// Calculate time step size and store it into dt.
@@ -60,7 +52,7 @@ public:
 	int mapPhysicalProperyToNode_SingleObject(void);
 
 	// calculate nodal force caused by stress within element.
-	int calInternalForce_SingleObject(void);
+	int calInternalAndSeepageForce_SingleObject(void);
 
 	// Calculate nodal force caused by body force and surface force.
 	int calExternalForce_SingleObject(void);
@@ -70,8 +62,6 @@ public:
 	// Apply boundary conditions
 	// Do not detect contact
 	int updatePhysicalPropertyAtNode_SingleObject(void);
-
-	int calFluidPhase(void);
 
 	int calContactForce(void);
 

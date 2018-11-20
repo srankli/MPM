@@ -85,13 +85,11 @@ void test_Solver_1D_Mechanics_1D2_Explicit_FixedMem(void)
 	// complete initialization
 	objects[0].finish_init();
 
-	OutputRequest output_request;
+	OutputRequest output_request("test_result");
 	Output *out1;
 	std::vector<size_t> pcl_id;
 	std::vector<unsigned long long> field_id;
 	
-	output_request.setFileName("test_result");
-	output_request.setStepTime(time_step);
 	pcl_id.push_back(1);
 	pcl_id.push_back(2);
 	pcl_id.push_back(3);
@@ -99,18 +97,17 @@ void test_Solver_1D_Mechanics_1D2_Explicit_FixedMem(void)
 	pcl_id.push_back(5);
 	//pcl_id.push_back(6);
 	//pcl_id.push_back(7);
-	field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::x));
+	field_id.push_back(static_cast<unsigned long long>(OutputFieldType_1D_Mechanics::x));
 	//field_id.push_back(2);
 	//field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::mass));
-	field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::isInMesh));
-	field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::velocity1));
-	field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::stress11));
-	field_id.push_back(static_cast<unsigned int>(OutputFieldType_1D_Mechanics::strain11));
+	field_id.push_back(static_cast<unsigned long long>(OutputFieldType_1D_Mechanics::isInMesh));
+	field_id.push_back(static_cast<unsigned long long>(OutputFieldType_1D_Mechanics::velocity1));
+	field_id.push_back(static_cast<unsigned long long>(OutputFieldType_1D_Mechanics::stress11));
+	field_id.push_back(static_cast<unsigned long long>(OutputFieldType_1D_Mechanics::strain11));
 	
 	out1 = output_request.addOutput("test_output1", 30);
 	out1->addObject(&objects[0], &field_id, &pcl_id);
 	
-	output_request.finish_init();
 	output_request.outputMeshGeometry(&mesh);
 	
 	Solver_1D_Mechanics_1D2_Explicit_FixedMem *solver;

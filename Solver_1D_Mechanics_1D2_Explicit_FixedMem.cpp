@@ -13,7 +13,7 @@ Solver_1D_Mechanics_1D2_Explicit_FixedMem::Solver_1D_Mechanics_1D2_Explicit_Fixe
 	std::vector<ObjectByParticle_1D_Mechanics> &pcl_objs,
 	OutputRequest &out) :
 	mesh(mh), pcl_objects(pcl_objs),
-	Solver(time_step, &out),
+	Solver(time_step, out),
 	nodeVarMem(nullptr), particleVarMem(nullptr)
 {
 	nodeCoords = mesh.nodeCoords;

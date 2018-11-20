@@ -14,7 +14,7 @@ Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem::
 	std::vector<ObjectByParticle_2D_Mechanics> &pcl_objs,
 	OutputRequest &out) :
 	mesh(mh), pcl_objects(pcl_objs),
-	Solver(time_step, &out),
+	Solver(time_step, out),
 	nodeVarMem(nullptr), particleVarMem(nullptr)
 {
 	nodeXCoords = mesh.nodeXCoords;

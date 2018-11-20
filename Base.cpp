@@ -76,36 +76,59 @@ const std::string &SolverError::getExplaination(void)
 }
 
 /* -------------------------------- Solver --------------------------------- */
+Solver::Solver(double time_step, OutputRequest &out, const char *na) :
+	index(1), name(na),
+	t_start(0.0), t_step(time_step),
+	t_cal(0.0), t_cur(0.0),
+	t_increment(0.0), t_increment_a(0.0),
+	iteration_index(0), output(out)
+{
+	output.setSolver(this);
+}
+
+Solver::Solver(double time_step, Solver &prev_solver, const char *na) :
+	index(++prev_solver.index), name(na),
+	t_start(prev_solver.t_start + prev_solver.t_step), t_step(time_step),
+	t_cal(0.0), t_cur(prev_solver.t_start + prev_solver.t_step),
+	t_increment(0.0), t_increment_a(0.0),
+	iteration_index(0), output(prev_solver.output)
+{
+	output.setSolver(this);
+}
+
 int Solver::solve(double time_increment)
 {
 	double t_tol;
 
 	init();
+	output.output_data_header();
 
-	t_cal = 0.0;
-	output->output(iteration_index, t_cal, true);
+	if (index == 1) output.output_f();
 	//std::cout << output->getStepTime() << std::endl;
 
-	// The first iteration
 	t_increment = time_increment;
-	// At the first step, time increment of acceleration integration
+	t_tol = 0.01 * t_increment;
+	
+	// The first iteration
+	// At the first iteration, time increment of acceleration integration
 	// should be half of that of velocity integration 
 	t_increment_a = t_increment / 2.0;
 	t_cal += t_increment;
-	t_tol = 0.01 * t_increment;
-	if (t_cal > (t_step - t_tol))
+	t_cur += t_increment;
+	if ((t_step - t_cal) < t_tol)
 	{
-		if ((t_cal - t_step) > 2.0 * t_tol)
+		if (t_cal - t_step > t_tol)
 		{
 			t_increment -= (t_cal - t_step);
 			t_increment_a = t_increment / 2.0;
 			t_cal = t_step;
+			t_cur = t_start + t_step;
 		}
 		goto last_iteration;
 	}
 	++iteration_index;
 	iteration();
-	output->output(iteration_index, t_cal);
+	output.output();
 
 	// The other iteration
 	t_increment_a = t_increment;
@@ -113,29 +136,30 @@ int Solver::solve(double time_increment)
 	{
 		// t_increment may change with time and thus recalculated every iteration
 		t_cal += t_increment;
-		t_tol = 0.01 * t_increment;
-		if (t_cal > (t_step - t_tol))
+		t_cur += t_increment;
+		//t_tol = 0.01 * t_increment;
+		if ((t_step - t_cal) < t_tol)
 		{
-			if ((t_cal - t_step) > 2.0 * t_tol)
+			if ((t_cal - t_step) > t_tol)
 			{
 				t_increment -= (t_cal - t_step);
 				t_increment_a = t_increment;
 				t_cal = t_step;
+				t_cur = t_start + t_step;
 			}
 			goto last_iteration;
 		}
 		++iteration_index;
 		iteration();
-		// output result
-		output->output(iteration_index, t_cal);
+		output.output();
 	}
 
 	// The last iteration
 last_iteration:
 	++iteration_index;
 	iteration();
-	output->output(iteration_index, t_cal, true);
-	output->complete();
+	output.output_f();
+	output.complete();
 
 	return 0;
 }

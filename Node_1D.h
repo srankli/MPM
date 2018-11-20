@@ -45,34 +45,31 @@ struct NodeVar_1D_Hydromechanics : NodeVar
 {
 public:
 	// Physical properties
+	// fluid - solid mixture
+	double momentum1_m;
+	// increment of linear momentum
+	double dMomentum1_m;
+	double externalForce1_m; // external force
+	double internalForce1_m; // internal force
+	double contactForce1_m;  // contact force
+	// = externalForce1_m - internalForce1_m (+ contactForce_m)
+	double nodalForce1_m;
+
 	// ----- solid phase -----
 	double mass_s;
-	double momentum1_s; // linear momentum
-	// increment of linear momentum
-	double dMomentum1_s;
+	double a1_s;
 	double v1_s; // velocity
-	double u_s; // displacement
+	double u1_s; // displacement
 	
-	double internalForce1_s; // internal force
-	double externalForce1_s; // external force
-	double contactForce1_s; // contact force
-	// = externalForce1_s - internalForce1_s + seepageForce1 (+ contactForce_s)
-	double nodalForce1_s;
-
 	// ----- fluid phase -----
+	double volume;
 	double mass_f;
-	double momentum1_f;
-	double dMomentum1_f;
-	double v1_f;
-	double u_f;
-
-	double internalForce1_f; // internal force
-	double externalForce1_f; // external force
-	// = externalForce1_s - internalForce1_s - seepageForce1 (+ contactForce_f)
-	double contactForce1_f;
+	double internalForce1_f;
+	double externalForce1_f;
 	double nodalForce1_f;
-
-	double seepageForce1; // seepage force
+	// w * volume = nodalForce1_f = externalForce1_f - internalForce1_f
+	double w;
+	double u1_f;
 };
 
 #endif

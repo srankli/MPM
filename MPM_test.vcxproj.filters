@@ -84,6 +84,9 @@
     <ClCompile Include="ObjectOutput_1D_Hydromechanics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Solver_1D_Hydromechanics_test_models.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="Solver_1D_Hydromechanics_1D2_Explicit_FixedMem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -189,6 +192,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Solver_1D_Hydromechanics_1D2_Explicit_FixedMem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Solver_Test.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

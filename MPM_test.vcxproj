@@ -142,6 +142,7 @@
     <ClCompile Include="Particle_1D_Mechanics.cpp" />
     <ClCompile Include="Particle_2D_Mechanics.cpp" />
     <ClCompile Include="Solver_1D_Hydromechanics_1D2_Explicit_FixedMem.cpp" />
+    <ClCompile Include="Solver_1D_Hydromechanics_test_models.cpp" />
     <ClCompile Include="Solver_1D_Mechanics_1D2_Explicit_FixedMem.cpp" />
     <ClCompile Include="Solver_1D_Mechanics_test_models.cpp" />
     <ClCompile Include="Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="FileBuffer.h" />
     <ClInclude Include="ObjectOutput_1D_Hydromechanics.h" />
     <ClInclude Include="Solver_1D_Hydromechanics_1D2_Explicit_FixedMem.h" />
+    <ClInclude Include="Solver_Test.h" />
     <ClInclude Include="TimeCurve.h" />
     <ClInclude Include="Element_R2D4.h" />
     <ClInclude Include="Mesh_R2D4.h" />

@@ -74,8 +74,8 @@ const char *ObjectOutput_1D_Hydromechanics::outputFieldName_1D_Hydromechanics[] 
 	nullptr,       //14
 	"mass_f",      //15
 	"density_f",   //16
-	"momentum1_f", //17
-	"velocity_f",  //18
+	nullptr, //17
+	"velocity1_f",  //18
 	"p",           //19
 };
 
@@ -88,7 +88,7 @@ const ObjectOutput_1D_Hydromechanics::OutputFunc
 	nullptr,             //4
 	&output_mass_s,      //5
 	&output_density_s,   //6
-	&output_momentum1_s, //7
+	&output_momentum1_m, //7
 	&output_velocity1_s, //8
 	&output_estress11,   //9
 	&output_strain11,    //10
@@ -98,8 +98,8 @@ const ObjectOutput_1D_Hydromechanics::OutputFunc
 	nullptr,             //14
 	&output_mass_f,      //15
 	&output_density_f,   //16
-	&output_momentum1_f, //17
-	&output_velocity1_f,  //18
+	nullptr,             //17
+	&output_velocity1_f, //18
 	&output_p,           //19
 };
 
@@ -168,18 +168,18 @@ void ObjectOutput_1D_Hydromechanics::output_density_s()
 		data_buffer[i] = particles_ptr[i]->density_s;
 }
 
-void ObjectOutput_1D_Hydromechanics::output_momentum1_s()
+void ObjectOutput_1D_Hydromechanics::output_momentum1_m()
 {
 	size_t i;
 	for (i = 0; i < particle_index_num; i++)
-		data_buffer[i] = particles_ptr[i]->momentum1_s;
+		data_buffer[i] = particles_ptr[i]->momentum1_m;
 }
 
 void ObjectOutput_1D_Hydromechanics::output_velocity1_s()
 {
 	size_t i;
 	for (i = 0; i < particle_index_num; i++)
-		data_buffer[i] = particles_ptr[i]->momentum1_s / particles_ptr[i]->mass_s;
+		data_buffer[i] = particles_ptr[i]->momentum1_m / (particles_ptr[i]->mass_s + particles_ptr[i]->mass_f);
 }
 
 void ObjectOutput_1D_Hydromechanics::output_estress11()
@@ -227,20 +227,12 @@ void ObjectOutput_1D_Hydromechanics::output_density_f()
 		data_buffer[i] = particles_ptr[i]->density_f;
 }
 
-void ObjectOutput_1D_Hydromechanics::output_momentum1_f()
-{
-	size_t i;
-	//  output each fields
-	for (i = 0; i < particle_index_num; i++)
-		data_buffer[i] = particles_ptr[i]->momentum1_f;
-}
-
 void ObjectOutput_1D_Hydromechanics::output_velocity1_f()
 {
 	size_t i;
 	//  output each fields
 	for (i = 0; i < particle_index_num; i++)
-		data_buffer[i] = particles_ptr[i]->momentum1_f / particles_ptr[i]->mass_f;
+		data_buffer[i] = static_cast<ParticleVar_1D_Hydromechanics *>(particles_ptr[i]->particleVar)->w;
 }
 
 void ObjectOutput_1D_Hydromechanics::output_p()

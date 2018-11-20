@@ -15,7 +15,7 @@ enum class OutputFieldType_1D_Hydromechanics : unsigned long long
 
 	mass_s = 5,
 	density_s = 6,
-	momentum1_s = 7,
+	momentum1_m = 7,
 	velocity1_s = 8,
 	estress11 = 9,
 	strain11 = 10,
@@ -24,8 +24,8 @@ enum class OutputFieldType_1D_Hydromechanics : unsigned long long
 
 	mass_f = 15,
 	density_f = 16,
-	momentum1_f = 17,
-	velocity_f = 18,
+
+	velocity1_f = 18,
 	p = 19
 };
 
@@ -68,7 +68,7 @@ protected:
 	void output_isInMesh();
 	void output_mass_s();
 	void output_density_s();
-	void output_momentum1_s();
+	void output_momentum1_m();
 	void output_velocity1_s();
 	void output_estress11();
 	void output_strain11();
@@ -76,7 +76,6 @@ protected:
 	void output_pstrain11();
 	void output_mass_f();
 	void output_density_f();
-	void output_momentum1_f();
 	void output_velocity1_f();
 	void output_p();
 

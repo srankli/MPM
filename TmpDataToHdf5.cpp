@@ -247,7 +247,7 @@ int TmpDataToHdf5::parse_output_attribute(HTmpData meta_handle)
 	hsize_t chunk_size;
 	hsize_t chunk_dims[2];
 
-	unsigned long long out_index, obj_num;
+	unsigned long long out_index, step_index, obj_num;
 	unsigned long long obj_index, sim_type, fld_num, pcl_num;
 	unsigned long long fld_type, pcl_index;
 
@@ -257,7 +257,9 @@ int TmpDataToHdf5::parse_output_attribute(HTmpData meta_handle)
 	std::vector<unsigned long long> pcl_index_array;
 	hsize_t pcl_num_hsize;
 
-	std::string key_name, key_name2;
+	std::string key_name, key_name2, key_name3, key_name4;
+	std::string output_name, step_name;
+	std::string output_grp_name;
 	std::string key_fld_type, key_fld_name;
 
 	// Assume all attribute have been written in only one chunk
@@ -278,22 +280,46 @@ int TmpDataToHdf5::parse_output_attribute(HTmpData meta_handle)
 	data_buffer = (char *)getToken(data_buffer, tk_tmp);
 	out_index = *(unsigned long long *)(tk_tmp.get_buf());
 	//std::cout << out_index << std::endl;
+
 	// output name
 	data_buffer = (char *)getToken(data_buffer, tk_tmp);
 	//std::cout << (char *)tk_tmp.get_buf() << std::endl;
 	key_name2 = (char *)tk_tmp.get_buf();
 	data_buffer = (char *)getToken(data_buffer, tk_tmp);
+	output_name = (char *)tk_tmp.get_buf();
 	//std::cout << (char *)out_name.get_buf() << std::endl;
 
-	// create group
-	out_grp_id = H5Gcreate(hdf5_file_id, (char *)tk_tmp.get_buf(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	// step index
+	data_buffer = (char *)getToken(data_buffer, tk_tmp);
+	//std::cout << (char *)tk_tmp.get_buf() << std::endl;
+	key_name3 = (char *)tk_tmp.get_buf();
+	data_buffer = (char *)getToken(data_buffer, tk_tmp);
+	step_index = *(unsigned long long *)(tk_tmp.get_buf());
+	//std::cout << step_index << std::endl;
+
+	// step name
+	data_buffer = (char *)getToken(data_buffer, tk_tmp);
+	//std::cout << (char *)tk_tmp.get_buf() << std::endl;
+	key_name4 = (char *)tk_tmp.get_buf();
+	data_buffer = (char *)getToken(data_buffer, tk_tmp);
+	step_name = (char *)tk_tmp.get_buf();
+	//std::cout << step_name << std::endl;
+
+	// create group for this output
+	output_grp_name = output_name + std::string("-") + step_name;
+	out_grp_id = H5Gcreate(hdf5_file_id, output_grp_name.c_str(),
+							H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	// write output index attribute
 	add_attr(out_grp_id, key_name.c_str(), out_index);
 	// write output name attribute
-	add_attr(out_grp_id, key_name2.c_str(), (char *)tk_tmp.get_buf());
+	add_attr(out_grp_id, key_name2.c_str(), output_name.c_str());
+	// write step index attribute
+	add_attr(out_grp_id, key_name3.c_str(), step_index);
+	// write step name attribute
+	add_attr(out_grp_id, key_name4.c_str(), step_name.c_str());
 
 	cur_output_id = out_index;
-	cur_output_name = (char *)tk_tmp.get_buf();
+	cur_output_name = output_grp_name.c_str();
 
 	// object number
 	data_buffer = (char *)getToken(data_buffer, tk_tmp);
