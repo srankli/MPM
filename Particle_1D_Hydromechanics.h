@@ -32,6 +32,9 @@ public:
 	double mass_f; // ***
 	double density_f; // ***
 
+	// relative apparent velocity of fluid phase relative to solid phase
+	// w = n * (v1_f - v1_s)
+	double w1;
 	double p; // pore pressure, take compressive as positive, default = 0.0
 	double Kf; // bulk modulus of fluid***
 
@@ -47,7 +50,7 @@ public:
 		momentum1_m(0.0),
 		estress11(0.0), strain11(0.0),
 		estrain11(0.0), pstrain11(0.0),
-		p(0.0){}
+		w1(0.0), p(0.0){}
 };
 
 
@@ -73,8 +76,10 @@ public:
 	// --------- fluid phase ---------
 	double mass_f;
 	double density_f;
-	//double momentum1_f; // is not momentum strictly speaking
-
+	
+	// relative apparent velocity of fluid phase relative to solid phase
+	// w = n * (v1_f - v1_s)
+	double w1;
 	// pore pressure, take compression as positive
 	double p;
 	// bulk modulus of fluid
@@ -89,7 +94,7 @@ public:
 		x(0.0), n(0.0), stress11(0.0),
 		mass_s(0.0), density_s(0.0), momentum1_m(0.0),
 		estress11(0.0), strain11(0.0), estrain11(0.0), pstrain11(0.0),
-		mass_f(0.0), density_f(0.0), //momentum1_f(0.0),
+		mass_f(0.0), density_f(0.0), w1(0.0),
 		p(0.0), Kf(0.0), k(0.0) {}
 };
 
@@ -109,12 +114,9 @@ public:
 	double avgdensity_f; // n * density_f
 
 	double a1_s; // acceleration of soild phase
-	double v1_s; // velocity of solid phase
+	//double v1_s; // velocity of solid phase
 	double dstrain11; // increment of total strain
 	
-	// relative apparent velocity of fluid phase relative to solid phase
-	// w = n * (v1_f - v1_s)
-	double w;
 	double dw_dx; // "volumetric strain" of fluid
 
 	union // value of shape function

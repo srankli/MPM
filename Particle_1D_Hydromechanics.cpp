@@ -27,6 +27,7 @@ int ObjectByParticle_1D_Hydromechanics::addParticle(
 	pcl->pstrain11 = pcl_param->pstrain11;
 
 	// --------- Fluid Phase ---------
+	pcl->w1 = pcl_param->w1;
 	pcl->p = pcl_param->p;
 	pcl->mass_f = pcl_param->mass_f;
 	pcl->density_f = pcl_param->density_f;

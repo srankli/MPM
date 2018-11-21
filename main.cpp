@@ -22,8 +22,8 @@ int main(void)
 	//extern void test_Solver_1D_Mechanics_1D2_Explicit_FixedMem(void);
 	//test_Solver_1D_Mechanics_1D2_Explicit_FixedMem();
 
-	//extern void test_Solver_1D_Hydromechanics_1D2_Explicit_FixedMem_2(void);
-	//test_Solver_1D_Hydromechanics_1D2_Explicit_FixedMem_2();
+	extern void test_Solver_1D_Hydromechanics_1D2_Explicit_FixedMem_2(void);
+	test_Solver_1D_Hydromechanics_1D2_Explicit_FixedMem_2();
 
 	//extern void test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_4(void);
 	//test_Solver_2DPlaneStrain_Mechanics_R2D4_Explicit_FixedMem_4();
@@ -34,8 +34,8 @@ int main(void)
 	//extern void test_FileBuffer(void);
 	//test_FileBuffer();
 
-	extern void test_OutputRequest(void);
-	test_OutputRequest();
+	//extern void test_OutputRequest(void);
+	//test_OutputRequest();
 
 	//extern void test_TmpDataToHdf5(void);
 	//test_TmpDataToHdf5();

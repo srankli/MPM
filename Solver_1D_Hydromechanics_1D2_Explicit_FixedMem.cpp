@@ -12,8 +12,9 @@ Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	double time_step,
 	Mesh_1D2 &mh,
 	std::vector<ObjectByParticle_1D_Hydromechanics> &pcl_objs,
-	OutputRequest &out) :
-	Solver(time_step, out),
+	OutputRequest &out,
+	const char *na) :
+	Solver(time_step, out, na),
 	mesh(mh), pcl_objects(pcl_objs),
 	nodeVarMem(nullptr), particleVarMem(nullptr)
 {
@@ -30,8 +31,9 @@ Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	Solver_1D_Hydromechanics_1D2_Explicit_FixedMem(
 		double time_step,
-		Solver_1D_Hydromechanics_1D2_Explicit_FixedMem &prev_solver) :
-	Solver(time_step, prev_solver),
+		Solver_1D_Hydromechanics_1D2_Explicit_FixedMem &prev_solver,
+		const char *na) :
+	Solver(time_step, prev_solver, na),
 	mesh(prev_solver.mesh), pcl_objects(prev_solver.pcl_objects),
 	nodeVarMem(prev_solver.nodeVarMem),
 	particleVarMem(prev_solver.particleVarMem)
@@ -55,6 +57,7 @@ Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	if (nodeVarMem) delete[] nodeVarMem;
 	if (particleVarMem) delete[] particleVarMem;
 }
+
 
 void Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::CFLTimeStep(void)
 {
@@ -132,6 +135,8 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::iteration(void)
 		calInternalForce_SingleObject();
 		calExternalForce_SingleObject();
 		updatePhysicalPropertyAtNode_SingleObject();
+		calFluidPhase();
+		calContactForce();
 		mapPhysicalPropertyToParticle_SingleObject();
 		updatePhysicalPropertyAtParticle_SingleObject();
 	}
@@ -182,6 +187,7 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 				mesh.calNaturalCoords(pElemTmp, pPclTmp->x, &xi);
 				pPclVarTmp->N1 = Mesh_1D2::N1(xi);
 				pPclVarTmp->N2 = Mesh_1D2::N2(xi);
+				//std::cout << pPclVarTmp->N1 << " " << pPclVarTmp->N2 << std::endl;
 				// Calculate one order derivative of shape functions
 				x1 = nodeCoords[pElemTmp->xIndex];
 				x2 = nodeCoords[pElemTmp->xIndex + 1];
@@ -203,16 +209,16 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 				do { \
 					if (!(pNodeVar->needCal)) \
 					{ \
-						pNodeVarTmp->needCal = true; \
-						pNodeVarTmp->momentum1_m = 0.0; \
-						pNodeVarTmp->internalForce1_m = 0.0; \
-						pNodeVarTmp->externalForce1_m = 0.0; \
-						pNodeVarTmp->contactForce1_m = 0.0; \
-						pNodeVarTmp->volume = 0.0; \
-						pNodeVarTmp->mass_s = 0.0; \
-						pNodeVarTmp->mass_f = 0.0; \
-						pNodeVarTmp->internalForce1_f = 0.0; \
-						pNodeVarTmp->externalForce1_f = 0.0; \
+						pNodeVar->needCal = true; \
+						pNodeVar->momentum1_m = 0.0; \
+						pNodeVar->internalForce1_m = 0.0; \
+						pNodeVar->externalForce1_m = 0.0; \
+						pNodeVar->contactForce1_m = 0.0; \
+						pNodeVar->volume = 0.0; \
+						pNodeVar->mass_s = 0.0; \
+						pNodeVar->mass_f = 0.0; \
+						pNodeVar->internalForce1_f = 0.0; \
+						pNodeVar->externalForce1_f = 0.0; \
 					} \
 				} while (0)
 
@@ -260,16 +266,16 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			pPclVarTmp = static_cast<ParticleVar_1D_Hydromechanics *>(pPclTmp->particleVar);
 			// node 1
 			pNodeVarTmp = pPclVarTmp->nodeVar1;
-			pNodeVarTmp->mass_s += pPclTmp->mass_s * pPclVarTmp->N1;
-			pNodeVarTmp->volume += pPclVarTmp->volume * pPclVarTmp->N1;
-			pNodeVarTmp->mass_f += pPclTmp->mass_f * pPclVarTmp->N1;
-			pNodeVarTmp->momentum1_m += pPclTmp->momentum1_m * pPclVarTmp->N1;
+			pNodeVarTmp->momentum1_m += pPclVarTmp->N1 *pPclTmp->momentum1_m;
+			pNodeVarTmp->mass_s += pPclVarTmp->N1 * pPclTmp->mass_s;
+			pNodeVarTmp->mass_f += pPclVarTmp->N1 *pPclTmp->mass_f;
+			pNodeVarTmp->volume += pPclVarTmp->N1 * pPclVarTmp->volume;
 			// node 2
 			pNodeVarTmp = pPclVarTmp->nodeVar2;
-			pNodeVarTmp->mass_s += pPclTmp->mass_s * pPclVarTmp->N2;
-			pNodeVarTmp->volume += pPclVarTmp->volume * pPclVarTmp->N2;
-			pNodeVarTmp->mass_f += pPclTmp->mass_f * pPclVarTmp->N2;
-			pNodeVarTmp->momentum1_m += pPclTmp->momentum1_m * pPclVarTmp->N2;
+			pNodeVarTmp->momentum1_m += pPclVarTmp->N2 * pPclTmp->momentum1_m;
+			pNodeVarTmp->mass_s += pPclVarTmp->N2 * pPclTmp->mass_s;
+			pNodeVarTmp->mass_f += pPclVarTmp->N2 * pPclTmp->mass_f;
+			pNodeVarTmp->volume += pPclVarTmp->N2 * pPclVarTmp->volume;
 		}
 	}
 
@@ -296,11 +302,13 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			// ------------------- Node 1 ----------------------
 			pNodeVarTmp = pPclVarTmp->nodeVar1;
 			pNodeVarTmp->internalForce1_m += pPclVarTmp->dN1_dx * (pPclTmp->estress11 - pPclTmp->p) * pPclVarTmp->volume;
-			pNodeVarTmp->internalForce1_f += pPclTmp->k * pPclVarTmp->dN1_dx * -pPclTmp->p * pPclVarTmp->volume;
+			pNodeVarTmp->internalForce1_f += pPclVarTmp->dN1_dx * pPclTmp->k * -pPclTmp->p * pPclVarTmp->volume;
 			// ------------------- Node 2 ----------------------
 			pNodeVarTmp = pPclVarTmp->nodeVar2;
 			pNodeVarTmp->internalForce1_m += pPclVarTmp->dN2_dx * (pPclTmp->estress11 - pPclTmp->p) * pPclVarTmp->volume;
-			pNodeVarTmp->internalForce1_f += pPclTmp->k * pPclVarTmp->dN2_dx * -pPclTmp->p * pPclVarTmp->volume;
+			pNodeVarTmp->internalForce1_f += pPclVarTmp->dN2_dx * pPclTmp->k * -pPclTmp->p * pPclVarTmp->volume;
+			//std::cout << "dN2_dx: " << pPclVarTmp->dN2_dx << " p: " << pPclTmp->p << std::endl;
+			//std::cout << " p: " << pPclTmp->p << std::endl;
 		}
 	}
 
@@ -397,9 +405,19 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			// calculate nodal force
 			pNodeVarTmp->nodalForce1_m = pNodeVarTmp->externalForce1_m
 				- pNodeVarTmp->internalForce1_m + pNodeVarTmp->contactForce1_m;
+			
+			//std::cout << "n_id: " << nodes[i].index
+			//	<< " ef: " << pNodeVarTmp->externalForce1_m
+			//	<< " if: " << pNodeVarTmp->internalForce1_m
+			//	<< " cf: " << pNodeVarTmp->contactForce1_m
+			//	<< " nf: " << pNodeVarTmp->nodalForce1_m << std::endl;
+
 			// calculate increment of linear momentum
 			pNodeVarTmp->dMomentum1_m = pNodeVarTmp->nodalForce1_m * t_increment_a;
 			pNodeVarTmp->a1_s = pNodeVarTmp->nodalForce1_m / (pNodeVarTmp->mass_s + pNodeVarTmp->mass_f);
+		
+			//std::cout << "n_id: " << nodes[i].index
+			//	<< " dm1: " << pNodeVarTmp->dMomentum1_m << std::endl;
 		}
 	}
 	
@@ -407,7 +425,7 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	for (a_iter = mesh.accelerationBCs_mem.get_first(); a_iter;
 		a_iter = mesh.accelerationBCs_mem.get_next(a_iter))
 	{
-		pNodeTmp = mesh.nodes + a_iter->index;
+		pNodeTmp = mesh.getNodeById(a_iter->index);
 		pNodeVarTmp = static_cast<NodeVar_1D_Hydromechanics *>(pNodeTmp->nodeVar);
 		if (pNodeVarTmp->needCal)
 		{
@@ -415,12 +433,11 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			{
 			case DegreeOfFreedom::x:
 				pNodeVarTmp->a1_s = a_iter->a(t_cal);
-				pNodeVarTmp->dMomentum1_m = a_iter->a(t_cal) * t_increment_a * (pNodeVarTmp->mass_s + pNodeVarTmp->mass_f);
+				pNodeVarTmp->dMomentum1_m = (pNodeVarTmp->mass_s + pNodeVarTmp->mass_f) * pNodeVarTmp->a1_s * t_increment_a;
 				break;
 			default:
 				break;
 			}
-			
 		}
 	}
 
@@ -431,6 +448,9 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 		{
 			// update linear momentum
 			pNodeVarTmp->momentum1_m += pNodeVarTmp->dMomentum1_m;
+			//std::cout << "n_id: " << nodes[i].index
+			//	<< " dm1: " << pNodeVarTmp->dMomentum1_m
+			//	<< " m1: " << pNodeVarTmp->momentum1_m << std::endl;
 		}
 	}
 
@@ -438,7 +458,7 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	for (v_iter = mesh.velocityBCs_mem.get_first(); v_iter;
 		 v_iter = mesh.velocityBCs_mem.get_next(v_iter))
 	{
-		pNodeTmp = mesh.nodes + v_iter->index;
+		pNodeTmp = mesh.getNodeById(v_iter->index);
 		pNodeVarTmp = static_cast<NodeVar_1D_Hydromechanics *>(pNodeTmp->nodeVar);
 		if (pNodeVarTmp->needCal)
 		{
@@ -464,6 +484,8 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			pNodeVarTmp->v1_s = pNodeVarTmp->momentum1_m / (pNodeVarTmp->mass_s + pNodeVarTmp->mass_f);
 			// calculate increment of displacement
 			pNodeVarTmp->u1_s = pNodeVarTmp->v1_s * t_increment;
+			//std::cout << "n_id: " << nodes[i].index 
+			//	<< " v1_s: " << pNodeVarTmp->v1_s << std::endl;
 		}
 	}
 
@@ -494,7 +516,7 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 
 			// map acceleration back to particle
 			pPclVarTmp->a1_s = pNode1VarTmp->a1_s * pPclVarTmp->N1 + pNode2VarTmp->a1_s * pPclVarTmp->N2;
-
+			//std::cout << "a1_s: " << pNode1VarTmp->a1_s << " " << pNode2VarTmp->a1_s << std::endl;
 			pNode1VarTmp->externalForce1_f += pPclVarTmp->N1 * pPclTmp->k * -pPclVarTmp->a1_s * pPclTmp->density_f * pPclVarTmp->volume;
 			pNode2VarTmp->externalForce1_f += pPclVarTmp->N2 * pPclTmp->k * -pPclVarTmp->a1_s * pPclTmp->density_f * pPclVarTmp->volume;
 		}
@@ -505,8 +527,10 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 		pNodeVarTmp = static_cast<NodeVar_1D_Hydromechanics *>(nodes[i].nodeVar);
 		if (pNodeVarTmp->needCal)
 		{
-			pNodeVarTmp->w = (pNodeVarTmp->externalForce1_f - pNodeVarTmp->internalForce1_f) / pNodeVarTmp->volume;
-			pNodeVarTmp->u1_f = pNodeVarTmp->w * t_increment;
+			pNodeVarTmp->w1 = (pNodeVarTmp->externalForce1_f - pNodeVarTmp->internalForce1_f) / pNodeVarTmp->volume;
+			pNodeVarTmp->u1_f = pNodeVarTmp->w1 * t_increment;
+			//std::cout << "n_id: " << nodes[i].index << " w1: " << pNodeVarTmp->w1
+			//	<< " ef_f: " << pNodeVarTmp->externalForce1_f << " if_f: " << pNodeVarTmp->internalForce1_f << std::endl;
 		}
 	}
 
@@ -514,23 +538,33 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	for (v_iter = mesh.velocityBCs_mem.get_first(); v_iter;
 		v_iter = mesh.velocityBCs_mem.get_next(v_iter))
 	{
-		pNodeTmp = mesh.nodes + v_iter->index;
+		pNodeTmp = mesh.getNodeById(v_iter->index);
 		pNodeVarTmp = static_cast<NodeVar_1D_Hydromechanics *>(pNodeTmp->nodeVar);
 		if (pNodeVarTmp->needCal)
 		{
 			switch (v_iter->dof)
 			{
 			case DegreeOfFreedom::x_f:
-				pNodeVarTmp->w = v_iter->v(t_cal);
-				pNodeVarTmp->u1_f = pNodeVarTmp->w * t_increment;
+				pNodeVarTmp->w1 = v_iter->v(t_cal);
+				pNodeVarTmp->u1_f = pNodeVarTmp->w1 * t_increment;
 				break;
 			default:
 				break;
 			}
 		}
 	}
-
-
+	
+	/*
+	for (i = 0; i < nodeNum; i++)
+	{
+		pNodeVarTmp = static_cast<NodeVar_1D_Hydromechanics *>(nodes[i].nodeVar);
+		if (pNodeVarTmp->needCal)
+		{
+			std::cout << "n_id: " << nodes[i].index
+				<< " u_s: " << pNodeVarTmp->u1_s
+				<< " u_f: " << pNodeVarTmp->u1_f << std::endl;
+		}
+	}*/
 
 	return 0;
 }
@@ -567,16 +601,28 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			//pPclVarTmp->a1_s = pNode1VarTmp->a1_s * N1Tmp + pNode2VarTmp->a1_s * N2Tmp;
 			// update linear momentum of soil - fluid mixture
 			pPclTmp->momentum1_m += (pPclTmp->mass_s + pPclTmp->mass_f) *
-				 (pNode1VarTmp->v1_s * N1Tmp + pNode2VarTmp->v1_s * N2Tmp);
+				(pNode1VarTmp->dMomentum1_m / (pNode1VarTmp->mass_s + pNode1VarTmp->mass_f) * N1Tmp
+					+ pNode2VarTmp->dMomentum1_m / (pNode2VarTmp->mass_s + pNode2VarTmp->mass_f) * N2Tmp);
 			// update location of particle
 			pPclTmp->x += pNode1VarTmp->u1_s * N1Tmp + pNode2VarTmp->u1_s * N2Tmp;
 			// update strain increment of particle
 			pPclVarTmp->dstrain11 =
 				pNode1VarTmp->u1_s * pPclVarTmp->dN1_dx + pNode2VarTmp->u1_s * pPclVarTmp->dN2_dx;
+			
+			//std::cout << "us: " << pNode1VarTmp->u1_s << " " << pNode2VarTmp->u1_s 
+			//	<< " dstrain11: " << pPclVarTmp->dstrain11 << std::endl;
+			
 			// fluid phase
-			pPclVarTmp->w = pNode1VarTmp->w * N1Tmp + pNode2VarTmp->w * N2Tmp;
+			pPclTmp->w1 = pNode1VarTmp->w1 * N1Tmp + pNode2VarTmp->w1 * N2Tmp;
 			pPclVarTmp->dw_dx =
 				pNode1VarTmp->u1_f * pPclVarTmp->dN1_dx + pNode2VarTmp->u1_f * pPclVarTmp->dN2_dx;
+			
+			//std::cout << "uf: " << pNode1VarTmp->u1_f << " " << pNode2VarTmp->u1_f
+			//	<< " dw_dx: " << pPclVarTmp->dw_dx << std::endl;
+
+			//std::cout << "iter_id: " << iteration_index 
+			//	<< " dstrain11: " << pPclVarTmp->dstrain11 
+			//	<< " dw_dx: " << pPclVarTmp->dw_dx << std::endl;
 		}
 	}
 
@@ -600,20 +646,25 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 	pcl_num_tmp = curObject->particleNum;
 	for (i = 0; i < pcl_num_tmp; i++)
 	{
-		pPclTmp = curObject->getParticleById(i + 1);
+		pPclTmp = curObject->particles + i;
 		pPclVarTmp = static_cast<ParticleVar_1D_Hydromechanics *>(pPclTmp->particleVar);
 		if (pPclTmp->isInMesh)
 		{
 			//std::cout << "pcl_id: " << pPclTmp->index;
 			// ------------------- Fluid Phase -------------------
+			// Take compression as positive
 			dstrain_v_f = -(pPclVarTmp->dw_dx + pPclVarTmp->dstrain11) / pPclTmp->n;
 			// update density of fluid phase
 			// dV / V = dDensity_f / density_f = dp / Kf;
 			dDensity_f = pPclTmp->density_f * dstrain_v_f;
 			pPclTmp->density_f += dDensity_f;
 			// update pore pressure
-			dp = dstrain_v_f * pPclTmp->Kf;
+			dp = pPclTmp->Kf * dstrain_v_f;
 			pPclTmp->p += dp;
+
+			//std::cout << "dstrain_v_f: " << dstrain_v_f 
+			//	<< " p: " << pPclTmp->p
+			//	<< " dp: " << dp << std::endl;
 
 			// ------------------- solid phase -------------------
 			// Assume density of solid phase remain unchanged
@@ -645,12 +696,26 @@ int Solver_1D_Hydromechanics_1D2_Explicit_FixedMem::
 			pPclTmp->estrain11 += destrain[0];
 			pPclTmp->pstrain11 += dpstrain[0];
 
+			//std::cout << " str: " << pPclTmp->estress11
+			//	<< " dstr: " << destress[0] << std::endl;
+
+			//std::cout << "n: " << pPclTmp->n
+			//	<< " dstrain_v_f: " << dstrain_v_f
+			//	<< " dp: " << dp
+			//	<< " dstr: " << destress[0] << std::endl;
+			//std::cout << "n: " << pPclTmp->n
+			//	<< " dstrain_v_f: " << dstrain_v_f
+			//	<< " p: " << pPclTmp->p
+			//	<< " str: " << pPclTmp->estress11 << std::endl;
+
 			// update porosity
 			F_det = 1.0 + pPclVarTmp->dstrain11;
 			pPclTmp->n = 1.0 - (1.0 - pPclTmp->n) / F_det;
 			// update mass of fluid phase
 			pPclTmp->mass_f = pPclTmp->density_f * pPclTmp->n *
 				(pPclTmp->mass_s / pPclTmp->density_s / (1.0 - pPclTmp->n));
+
+			//std::cout << pPclTmp->mass_f / pPclTmp->density_f /(pPclTmp->mass_s / pPclTmp->density_s + pPclTmp->mass_f / pPclTmp->density_f) << std::endl;
 		}
 	}
 

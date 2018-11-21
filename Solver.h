@@ -64,6 +64,7 @@ public:
 
 	inline void setTimeIncrement(double time_increment) noexcept
 	{ t_increment = time_increment; } // use CFL in the future
+	inline void setName(const char *na) noexcept { name = na; }
 
 	/*
 	Initialize Calculation

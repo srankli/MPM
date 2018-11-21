@@ -68,7 +68,7 @@ public:
 	double externalForce1_f;
 	double nodalForce1_f;
 	// w * volume = nodalForce1_f = externalForce1_f - internalForce1_f
-	double w;
+	double w1;
 	double u1_f;
 };
 

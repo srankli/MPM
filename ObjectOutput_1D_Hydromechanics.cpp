@@ -232,7 +232,9 @@ void ObjectOutput_1D_Hydromechanics::output_velocity1_f()
 	size_t i;
 	//  output each fields
 	for (i = 0; i < particle_index_num; i++)
-		data_buffer[i] = static_cast<ParticleVar_1D_Hydromechanics *>(particles_ptr[i]->particleVar)->w;
+	{
+		data_buffer[i] = particles_ptr[i]->w1;
+	}
 }
 
 void ObjectOutput_1D_Hydromechanics::output_p()

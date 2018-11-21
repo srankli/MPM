@@ -39,11 +39,12 @@ public:
 		double time_step,
 		Mesh_1D2 &mh,
 		std::vector<ObjectByParticle_1D_Hydromechanics> &pcl_objs,
-		OutputRequest &out);
+		OutputRequest &out, const char *na = "");
 	// The copy function is used to get data from the previous step (solver)
 	Solver_1D_Hydromechanics_1D2_Explicit_FixedMem(
 		double time_step,
-		Solver_1D_Hydromechanics_1D2_Explicit_FixedMem &prev_solver);
+		Solver_1D_Hydromechanics_1D2_Explicit_FixedMem &prev_solver,
+		const char *na = "");
 	~Solver_1D_Hydromechanics_1D2_Explicit_FixedMem();
 
 	// Calculate time step size and store it into dt.
